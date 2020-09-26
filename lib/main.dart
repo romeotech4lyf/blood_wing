@@ -1,21 +1,25 @@
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'delayed_animation.dart';
+import 'LoginScreen.dart';
 
 void main() {
   SystemChrome.setEnabledSystemUIOverlays([]);
   print("hi");
-  runApp(MyApp());
+  runApp(MaterialApp(home: InviteScreen(), debugShowCheckedModeBanner: false));
 }
 
-class MyApp extends StatefulWidget {
+class InviteScreen extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
+class _MyAppState extends State<InviteScreen>
+    with SingleTickerProviderStateMixin {
   final int delayedAmount = 500;
   double _scale;
   AnimationController _controller;
@@ -37,6 +41,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    Firebase.initializeApp();
     final color = Colors.white;
     final blood_drop_icon = Image.asset(
       "images/blood_drop.png",
@@ -139,12 +144,20 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                   height: 20.0,
                 ),
                 DelayedAnimation(
-                  child: Text(
-                    "I already have an account",
-                    style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: color),
+                  child: FlatButton(
+                    onPressed: () => {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginScreen())),
+                    },
+                    child: Text(
+                      "I already have an account",
+                      style: TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                          color: color),
+                    ),
                   ),
                   delay: delayedAmount + 5000,
                 ),
@@ -185,27 +198,33 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   }
 }
 
-class SubPage extends StatelessWidget {
+class HomeScreen extends StatelessWidget {
+  final User user;
+
+  HomeScreen({this.user});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Sub Page'),
-        backgroundColor: Colors.redAccent,
-      ),
-      body: Center(
+      body: Container(
+        padding: EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('Click button to back to Main Page'),
-            RaisedButton(
-              textColor: Colors.white,
-              color: Colors.redAccent,
-              child: Text('Back to Main Page'),
-              onPressed: () {
-                // TODO
-              },
-            )
+            Text(
+              "You are Logged in succesfully",
+              style: TextStyle(color: Colors.lightBlue, fontSize: 32),
+            ),
+            SizedBox(
+              height: 16,
+            ),
+            Text(
+              "${user.phoneNumber}",
+              style: TextStyle(
+                color: Colors.grey,
+              ),
+            ),
           ],
         ),
       ),
